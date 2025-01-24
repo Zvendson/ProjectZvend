@@ -10,3 +10,6 @@
 [submodule "deps/spdlog"]
 	path = deps/spdlog
 	url = https://github.com/Zvendson/spdlog.git
+[submodule "deps/base64"]
+	path = deps/base64
+	url = https://github.com/Zvendson/base64.git
