@@ -4,3 +4,6 @@
 [submodule "deps/imgui"]
 	path = deps/imgui
 	url = https://github.com/Zvendson/imgui.git
+[submodule "deps/json"]
+	path = deps/json
+	url = https://github.com/Zvendson/json.git
