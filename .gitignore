@@ -1,5 +1,7 @@
 # cmake
 build/
+build32/
+build64/
 
 # Prerequisites
 *.d
