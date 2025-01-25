@@ -31,7 +31,6 @@ file(GLOB_RECURSE SOURCES
 
 file(GLOB_RECURSE HEADERS 
     "${CMAKE_CURRENT_SOURCE_DIR}/include/ProjectZvend/*.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/ProjectZvend/*.cpp"
 )
 
 target_sources(ProjectZvend
@@ -81,11 +80,12 @@ target_precompile_headers(ProjectZvend
 )
 
 target_link_libraries(ProjectZvend 
-    PRIVATE 
-        nlohmann_json::nlohmann_json
-        spdlog::spdlog
-        minhook
+    PUBLIC
+        spdlog::spdlog        
         imgui
+    PRIVATE 
+        minhook
+        nlohmann_json::nlohmann_json
         base64
         Dbghelp
 )
