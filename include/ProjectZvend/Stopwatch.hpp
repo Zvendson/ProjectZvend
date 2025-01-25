@@ -71,7 +71,9 @@ namespace PZvend
         */
         [[nodiscard]] inline double GetElapsedTime() const noexcept
         {
-            std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - m_TimeStarted;
+            using namespace std::chrono;
+
+            duration<double> elapsed = steady_clock::now() - m_TimeStarted;
             return elapsed.count();
         }
 
@@ -82,7 +84,13 @@ namespace PZvend
 
         @return Returns the elapsed time in milliseconds as an integer. (E.G.: 17993 = 17s and 993ms)
         */
-        [[nodiscard]] inline int GetElapsedTimeInMS() const noexcept { return static_cast<int>(GetElapsedTime() * 1000);}
+        [[nodiscard]] inline int GetElapsedTimeInMS() const noexcept
+        {
+            using namespace std::chrono;
+
+            duration<double> elapsed = duration_cast<milliseconds>(steady_clock::now() - m_TimeStarted);
+            return static_cast<int>(GetElapsedTime() * 1000);
+        }
 
     private:
         double                                m_WatchTime;
