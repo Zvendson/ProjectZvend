@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <MinHook.h>
 #include <wtypes.h>
 
 
@@ -43,6 +44,10 @@ namespace PZvend
 /*************\
 *  Functions  *
 \*************/
+
+
+        bool Initialize();
+
         /*
         !! Spaces are required that the combo-pattern will work !!
         @enhancement: allow spaces
@@ -308,6 +313,132 @@ namespace PZvend
         protected: /* Variables */
             /* 0x0000 */ SectionData m_Sections[ScanSection::MAX] = {};
             /* 0x0008 */ DllModule   m_Module                     = nullptr;
+        };
+
+
+
+        template <class T>
+        class THook
+        {
+        public:
+            THook() = default;
+            THook(const char* name, T address, T callback)
+                : m_Name(name), m_FuncAddress((void*)address), m_DetourFunc((void*)callback)
+            {}
+
+            bool Create()
+            {
+                if (m_RetAddress)
+                    return true;
+
+                auto mh_status = MH_CreateHook(m_FuncAddress, m_DetourFunc, &m_RetAddress);
+                if (mh_status != MH_OK)
+                {
+                    SPDLOG_ERROR("Creating '{}' failed with {}.", m_Name, MH_StatusToString(mh_status));
+                    return false;
+                }
+
+                SPDLOG_DEBUG("Created '{}' Hook.", m_Name);
+                return true;
+            }
+
+
+
+            bool Remove()
+            {
+                if (!m_RetAddress)
+                    return true;
+
+                auto mh_status = MH_RemoveHook(m_FuncAddress);
+                if (mh_status != MH_OK)
+                {
+                    SPDLOG_ERROR("Removing '{}' failed with {}.", m_Name, MH_StatusToString(mh_status));
+                    return false;
+                }
+
+                SPDLOG_DEBUG("Removed '{}' Hook.", m_Name);
+                m_Enabled    = false;
+                m_RetAddress = nullptr;
+                return true;
+            }
+
+
+
+            bool Enable()
+            {
+                if (IsEnabled())
+                    return true;
+
+                auto mh_status = MH_EnableHook(m_FuncAddress);
+                if (mh_status != MH_OK)
+                {
+                    SPDLOG_ERROR("Enabling '{}' failed with {}.", m_Name, MH_StatusToString(mh_status));
+                    return false;
+                }
+
+                SPDLOG_DEBUG("Enabled '{}' Hook.", m_Name);
+                m_Enabled = true;
+                return true;
+            }
+
+
+
+            bool Disable()
+            {
+                if (!IsEnabled())
+                    return true;
+
+                auto mh_status = MH_DisableHook(m_FuncAddress);
+                if (mh_status != MH_OK)
+                {
+                    SPDLOG_ERROR("[Memory] Disabling '{}' failed with {}.", m_Name, MH_StatusToString(mh_status));
+                    return false;
+                }
+
+                SPDLOG_DEBUG("[Memory] Disabled '{}' Hook.", m_Name);
+                m_Enabled = false;
+                return true;
+            }
+
+
+
+            bool Retour(T NewCallback)
+            {
+                bool enabled = IsEnabled();
+                if (!Remove())
+                    return false;
+
+                void* old_callback = m_DetourFunc;
+                m_DetourFunc = reinterpret_cast<void*>(NewCallback);
+
+                if (!Create())
+                    return false;
+
+                if (enabled)
+                    Enable();
+
+                SPDLOG_DEBUG("[Memory] Retoured '{}' Hook from {} to {}.", m_Name, fmt::ptr(old_callback), fmt::ptr(m_DetourFunc));
+                return true;
+            }
+
+
+
+            inline bool IsEnabled() { return m_Enabled; }
+
+            // Call the original function
+            template <typename ...Args>
+            auto Call(Args&& ...args)
+            {
+                SPDLOG_DEBUG("[Memory] Calling original function of '{}' with {} args.", m_Name, sizeof...(args));
+                return reinterpret_cast<T>(m_RetAddress)(std::forward<Args>(args)...);
+            }
+
+        private:
+            std::string m_Name;
+            void*       m_FuncAddress = nullptr;
+            void*       m_RetAddress  = nullptr;
+            void*       m_DetourFunc  = nullptr;
+            bool        m_Enabled     = false;
         };
     }
 }

@@ -24,12 +24,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(ProjectZvend)
 
-file(GLOB_RECURSE SOURCES 
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" 
+file(GLOB_RECURSE SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
 )
 
-file(GLOB_RECURSE HEADERS 
+file(GLOB_RECURSE HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/include/ProjectZvend/*.hpp"
 )
 
@@ -44,11 +44,12 @@ target_include_directories(ProjectZvend
     PUBLIC
         "include/"
     PRIVATE 
+    PRIVATE
         "src/"
 )
 
-target_precompile_headers(ProjectZvend 
-    PRIVATE 
+target_precompile_headers(ProjectZvend
+    PRIVATE
         "<algorithm>"
         "<array>"
         "<cassert>"
@@ -72,6 +73,7 @@ target_precompile_headers(ProjectZvend
         "<utility>"
         "<vector>"
         
+
         "<nlohmann/json.hpp>"
         "<minhook.h>"
         "<spdlog/spdlog.h>"
@@ -79,13 +81,12 @@ target_precompile_headers(ProjectZvend
         "<base64.hpp>"
 )
 
-target_link_libraries(ProjectZvend 
+target_link_libraries(ProjectZvend
     PUBLIC
-        spdlog::spdlog        
+        spdlog::spdlog
         imgui
-    PRIVATE 
-        minhook
         nlohmann_json::nlohmann_json
+        minhook
         base64
         Dbghelp
 )

@@ -4,6 +4,31 @@
 
 #include <DbgHelp.h>
 #include <Psapi.h>
+#include <spdlog/spdlog.h>
+
+
+namespace
+{
+    static bool g_MemoryInitialized = false;
+}
+
+
+bool PZvend::Memory::Initialize()
+
+{
+    if (g_MemoryInitialized)
+        return true;
+
+    auto mh_status = MH_Initialize();
+    if (mh_status != MH_OK)
+    {
+        SPDLOG_CRITICAL("Memory could not be initialized, because: {}.", MH_StatusToString(mh_status));
+        return false;
+    }
+
+    g_MemoryInitialized = true;
+    return true;
+}
 
 
 
