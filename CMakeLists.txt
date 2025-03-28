@@ -90,6 +90,7 @@ target_link_libraries(ProjectZvend
 )
 
 if(ENABLE_SANDBOX)
+    add_subdirectory(sandboxDll)
     add_subdirectory(sandbox)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Sandbox)
 endif()
