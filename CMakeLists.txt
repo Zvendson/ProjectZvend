@@ -43,7 +43,6 @@ target_sources(ProjectZvend
 target_include_directories(ProjectZvend
     PUBLIC
         "include/"
-    PRIVATE 
     PRIVATE
         "src/"
 )
@@ -72,7 +71,6 @@ target_precompile_headers(ProjectZvend
         "<unordered_map>"
         "<utility>"
         "<vector>"
-        
 
         "<nlohmann/json.hpp>"
         "<minhook.h>"
