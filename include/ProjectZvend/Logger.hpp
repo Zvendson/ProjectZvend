@@ -1,7 +1,8 @@
 #pragma once
 
 
-#include <filesystem>
+#include "ProjectZvend/Paths.hpp"
+
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -90,17 +91,18 @@ namespace PZvend
 
         if (!path.empty())
         {
-            std::filesystem::create_directories(path);
-
             std::tm     timeinfo;
             std::time_t current_time = std::time(nullptr);
             localtime_s(&timeinfo, &current_time);
+
+            if (!Path::Create(path))
+                throw std::exception("Path could not be created.");
 
             std::ostringstream oss;
             oss << path;
             if (!(path.ends_with('/')))
                 oss << '/';
-            oss << std::put_time(&timeinfo, "%Y-%m-%d_%H-%M-%S.log");
+            oss << std::put_time(&timeinfo, "%Y-%m-%d.log");
 
             auto rotatingSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(oss.str(), max_file_size, max_files);
             rotatingSink->set_pattern("[%T][%n][%l] %v");
@@ -108,7 +110,7 @@ namespace PZvend
             sinks.push_back(rotatingSink);
         }
 
-        auto logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
+        auto logger = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
         logger->set_level(level);
         logger->flush_on(level);
         return logger;
