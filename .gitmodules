@@ -13,3 +13,6 @@
 [submodule "deps/base64"]
 	path = deps/base64
 	url = https://github.com/Zvendson/base64.git
+[submodule "deps/Catch2"]
+	path = deps/Catch2
+	url = https://github.com/catchorg/Catch2.git
